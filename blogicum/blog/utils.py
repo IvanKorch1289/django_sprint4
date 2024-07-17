@@ -1,8 +1,7 @@
-import pytz
-
-from datetime import datetime as dt
-
 from django.db.models import Count
+from django.http import Http404
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from blog.models import Post, User
 
@@ -15,7 +14,7 @@ def get_all_posts():
         'author'
     ).order_by(
         '-pub_date'
-    ).annotate(comment_count=Count('post_comments'))
+    ).annotate(comment_count=Count('comments'))
 
 
 def get_all_pub_posts():
@@ -23,12 +22,14 @@ def get_all_pub_posts():
     return get_all_posts().filter(
         is_published=True,
         category__is_published=True,
-        pub_date__lt=dt.now(tz=pytz.UTC))
+        pub_date__lt=timezone.now()
+    )
 
 
 def get_all_author_posts(username):
     """Функция получения всех постов автора"""
-    return get_all_posts().filter(author=User.objects.get(username=username))
+    return get_all_posts().filter(
+        author=get_object_or_404(User, username=username))
 
 
 def get_avail_posts(username):
@@ -38,11 +39,12 @@ def get_avail_posts(username):
 
 def get_avail_post_by_id(username, post_id):
     """Функция проверки доступности поста"""
-    post = Post.objects.get(id=post_id)
+    post = get_object_or_404(Post, id=post_id)
+    author = get_object_or_404(User, username=username)
 
     check_is_pub = not post.is_published or not post.category.is_published
-    check_pub_date = post.pub_date > dt.now(tz=pytz.UTC)
+    check_pub_date = post.pub_date > timezone.now()
 
     if post.author.username != username and (check_is_pub or check_pub_date):
-        return None
+        raise Http404
     return post
