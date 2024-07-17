@@ -7,10 +7,10 @@ from django.views.generic.detail import DetailView
 
 from blog.constants import CNT_POSTS_FOR_PAGINATE
 from blog.forms import CommentForm, ProfileForm
+from blog.mixins import (CommentAuthCheckMixin, CommentMixin, PostChangesMixin,
+                         PostFormMixin, PostIdMixin, PostOneMixin)
 from blog.models import Category, Post, User
-from blog.utils import get_all_pub_posts, get_all_author_posts
-from blog.mixins import (PostOneMixin, PostFormMixin, PostChangesMixin,
-                         PostIdMixin, CommentMixin, CommentAuthCheckMixin)
+from blog.utils import get_all_author_posts, get_all_pub_posts
 
 
 class BasePostListView(PostOneMixin, ListView):

@@ -40,11 +40,11 @@ def get_avail_posts(username):
 def get_avail_post_by_id(username, post_id):
     """Функция проверки доступности поста"""
     post = get_object_or_404(Post, id=post_id)
-    author = get_object_or_404(User, username=username)
+    user = get_object_or_404(User, username=username)
 
-    check_is_pub = not post.is_published or not post.category.is_published
-    check_pub_date = post.pub_date > timezone.now()
+    is_not_pub = not post.is_published or not post.category.is_published
+    has_fut_date = post.pub_date > timezone.now()
 
-    if post.author.username != username and (check_is_pub or check_pub_date):
+    if post.author.username != user.username and (is_not_pub or has_fut_date):
         raise Http404
     return post
