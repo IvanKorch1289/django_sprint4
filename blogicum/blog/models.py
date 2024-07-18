@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils.text import Truncator
+
+from blog.constants import DEF_LEN_TITLE
 
 User = get_user_model()
 
@@ -42,7 +45,7 @@ class Category(CreatedAndPubModel, TitleModel):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.title if len(self.title) < 30 else self.title[:30] + '...'
+        return Truncator(self.title).chars(DEF_LEN_TITLE)
 
 
 class Location(CreatedAndPubModel):
@@ -53,7 +56,7 @@ class Location(CreatedAndPubModel):
         verbose_name_plural = 'Местоположения'
 
     def __str__(self):
-        return self.name if len(self.name) < 30 else self.name[:30] + '...'
+        return Truncator(self.name).chars(DEF_LEN_TITLE)
 
 
 class Post(CreatedAndPubModel, TitleModel):

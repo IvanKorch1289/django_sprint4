@@ -1,13 +1,18 @@
 from django.forms import DateTimeInput, ModelForm, Textarea
+from django.utils import timezone
 
 from blog.models import Comment, Post, User
 
 
 class PostForm(ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['pub_date'].initial = timezone.now()
+
     class Meta:
         model = Post
-        exclude = ('author', 'id')
+        exclude = ('author',)
         widgets = {'pub_date': DateTimeInput(
             format='%Y-%m-%d',
             attrs={'class': 'form-control',

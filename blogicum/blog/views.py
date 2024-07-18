@@ -48,7 +48,7 @@ class PostDeleteView(LoginRequiredMixin, PostChangesMixin, DeleteView):
     pass
 
 
-class PostDetailView(LoginRequiredMixin, PostIdMixin, DetailView):
+class PostDetailView(PostIdMixin, DetailView):
     """Представление для отображения отдельного объекта поста."""
 
     template_name = 'blog/detail.html'
@@ -63,11 +63,14 @@ class PostDetailView(LoginRequiredMixin, PostIdMixin, DetailView):
 class ProfilePostListView(BasePostListView):
     """Представление для отображения профиля пользователя."""
 
-    slug_url_kwarg = 'username'
     template_name = 'blog/profile.html'
 
     def get_queryset(self) -> QuerySet:
-        return get_all_author_posts(username=self.kwargs['username'])
+        profile = get_object_or_404(User, username=self.kwargs['username'])
+        if self.request.user.username == profile.username:
+            return get_all_author_posts(username=profile.username)
+        else:
+            return get_all_pub_posts().filter(author__username=profile.username)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -105,7 +108,7 @@ class CategoryPostListView(BasePostListView):
 
     def get_queryset(self) -> QuerySet:
         category = self.get_object()
-        return super().get_queryset().filter(category__slug=category.slug)
+        return super().get_queryset().filter(category=category)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

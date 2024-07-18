@@ -30,6 +30,11 @@ class PostFormMixin(PostOneMixin):
     form_class = PostForm
     template_name = 'blog/create.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = PostForm()
+        return context
+
     def get_success_url(self):
         return reverse('blog:profile', args=[self.request.user.username])
 
