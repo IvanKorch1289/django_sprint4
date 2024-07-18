@@ -70,7 +70,8 @@ class ProfilePostListView(BasePostListView):
         if self.request.user.username == profile.username:
             return get_all_author_posts(username=profile.username)
         else:
-            return get_all_pub_posts().filter(author__username=profile.username)
+            return get_all_pub_posts().filter(
+                author__username=profile.username)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
